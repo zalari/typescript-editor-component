@@ -1,5 +1,5 @@
-import { Component, Prop, h } from '@stencil/core';
-import { format } from '../../utils/utils';
+import { Component, h, Prop } from '@stencil/core';
+import { scriptLoader } from '../../utils/utils';
 
 @Component({
   tag: 'typescript-editor-component',
@@ -7,30 +7,21 @@ import { format } from '../../utils/utils';
   shadow: false
 })
 export class TypescriptEditorComponent {
-  /**
-   * The first name
-   */
-  @Prop() first: string;
 
-  /**
-   * The middle name
-   */
-  @Prop() middle: string;
+  @Prop() baseUrl: string = '';
 
-  /**
-   * The last name
-   */
-  @Prop() last: string;
+  constructor() {
+    // only load the vs-loader stuff only once
+    console.log('Loading vs-loader');
+    const body = document.getElementsByTagName('body')[0];
+    scriptLoader(body, this.baseUrl + 'vendor/monaco-editor/min/vs/loader.js');
+  }
 
   private _editorHost: HTMLDivElement;
 
-  private getText(): string {
-    return format(this.first, this.middle, this.last);
-  }
-
   private _initializeMonaco() {
     console.info('Initialize Monaco...');
-    require.config({ paths: { 'vs': '/vendor/monaco-editor/min/vs' } });
+    require.config({ paths: { 'vs': this.baseUrl + 'vendor/monaco-editor/min/vs' } });
   }
 
   private _attachEditorToHostElement(hostElement: HTMLElement) {
@@ -52,18 +43,22 @@ export class TypescriptEditorComponent {
   }
 
   componentWillLoad() {
-    // initialize monaco
-    this._initializeMonaco();
   }
 
   componentDidLoad() {
-    this._attachEditor();
+    // we need some time...
+    setTimeout(() => {
+      // initialize monaco
+      this._initializeMonaco();
+      this._attachEditor();
+    }, 1000);
   }
 
   render() {
     return <div>
-      <div>Hello, World! I'm { this.getText() }</div>
-      <div ref={el => this._editorHost = el} class="editor"> </div>
+      <div ref={ el => this._editorHost = el }
+           class="editor"
+      > </div>
     </div>;
   }
 }

@@ -10,18 +10,7 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 export namespace Components {
   interface TypescriptEditorComponent {
-    /**
-    * The first name
-    */
-    'first': string;
-    /**
-    * The last name
-    */
-    'last': string;
-    /**
-    * The middle name
-    */
-    'middle': string;
+    'baseUrl': string;
   }
 }
 
@@ -40,18 +29,7 @@ declare global {
 
 declare namespace LocalJSX {
   interface TypescriptEditorComponent extends JSXBase.HTMLAttributes<HTMLTypescriptEditorComponentElement> {
-    /**
-    * The first name
-    */
-    'first'?: string;
-    /**
-    * The last name
-    */
-    'last'?: string;
-    /**
-    * The middle name
-    */
-    'middle'?: string;
+    'baseUrl'?: string;
   }
 
   interface IntrinsicElements {
