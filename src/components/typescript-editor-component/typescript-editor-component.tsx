@@ -1,5 +1,7 @@
 import { Component, h, Prop } from '@stencil/core';
 import { scriptLoader } from '../../utils/utils';
+import { languages } from 'monaco-editor';
+import CompilerOptions = languages.typescript.CompilerOptions;
 
 @Component({
   tag: 'typescript-editor-component',
@@ -22,6 +24,8 @@ export class TypescriptEditorComponent {
 
   private _editorHost: HTMLDivElement;
 
+  private _editorInstance: any;
+
   private _initializeMonaco() {
     console.info('Initialize Monaco...');
     require.config({ paths: { 'vs': this.baseUrl + 'vendor/monaco-editor/min/vs' } });
@@ -29,8 +33,9 @@ export class TypescriptEditorComponent {
 
   private _attachEditorToHostElement(hostElement: HTMLElement) {
     console.log('Attach!');
-    require(['vs/editor/editor.main'], function () {
-      monaco.editor.create(hostElement, {
+    require(['vs/editor/editor.main'], () => {
+      // creatting the monaco editor and save the instance for it
+      this._editorInstance = monaco.editor.create(hostElement, {
         value: [
           'function x() {',
           '\tconsole.log("Hello world!");',
@@ -38,11 +43,41 @@ export class TypescriptEditorComponent {
         ].join('\n'),
         language: 'typescript'
       });
+
+      // we want to get notified for changes
+      const model = this._editorInstance.getModel();
+      model.onDidChangeContent(() => {
+        const value = model.getValue();
+        this.onEditorChange(value);
+      });
+
+
     });
   }
 
   private _attachEditor() {
     this._attachEditorToHostElement(this._editorHost);
+  }
+
+  private _transformTypeScript(inputCode: string, compilerOptions?: CompilerOptions): string {
+
+    let result = ts.transpileModule(inputCode, {
+      compilerOptions: {
+        module: ts.ModuleKind.CommonJS
+      }
+    });
+
+    return result.outputText;
+
+  }
+
+  onEditorChange(content) {
+    // console.log('Editor changed content to', content);
+    // now transpile it and ev0l() it!
+    const transpiledJs = this._transformTypeScript(content);
+    // console.log('transpiled', transpiledJs);
+    eval(transpiledJs);
+
   }
 
   componentWillLoad() {
