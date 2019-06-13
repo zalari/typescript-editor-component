@@ -23,6 +23,7 @@ export class TypescriptEditorComponent {
   }
 
   private _editorHost: HTMLDivElement;
+  private _logHost: HTMLDivElement;
 
   private _editorInstance: any;
 
@@ -53,6 +54,20 @@ export class TypescriptEditorComponent {
 
 
     });
+  }
+
+  private _attachLog() {
+    // monkey patch console.log because that is how we program
+    const orgConsoleLog = console.log;
+    console.log = (...args) => {
+      // attach the logs to the logHost
+      // by naively assuming all our arguments will be easily coerced into strings...
+      const logOutput = args.map(arg => arg + '').join(' ');
+      this._logHost.innerHTML += logOutput + '<br/>';
+      // and call the original one...
+      orgConsoleLog.apply(window, args);
+    }
+
   }
 
   private _attachEditor() {
@@ -89,6 +104,7 @@ export class TypescriptEditorComponent {
       // initialize monaco
       this._initializeMonaco();
       this._attachEditor();
+      this._attachLog();
     }, 1000);
   }
 
@@ -96,7 +112,8 @@ export class TypescriptEditorComponent {
     return <div>
       <div ref={ el => this._editorHost = el }
            class="editor"
-      > </div>
+      ></div>
+      <div ref={ el => this._logHost = el } class="log">&nbsp;</div>
     </div>;
   }
 }
