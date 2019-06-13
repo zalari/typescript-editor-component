@@ -1,12 +1,12 @@
-import { Component, Element, h, Listen, Prop } from '@stencil/core';
-import { scriptLoader } from '../../utils/utils';
-import { languages } from 'monaco-editor';
+import {Component, Element, h, Listen, Prop} from '@stencil/core';
+import {languages} from 'monaco-editor';
+import {scriptLoader} from '../../utils/utils';
 import CompilerOptions = languages.typescript.CompilerOptions;
 
 @Component({
   tag: 'typescript-editor-component',
-  styleUrl: 'typescript-editor-component.css',
-  shadow: false
+  styleUrl: 'typescript-editor-component.scss',
+  shadow: false,
 })
 export class TypescriptEditorComponent {
 
@@ -33,21 +33,23 @@ export class TypescriptEditorComponent {
   private _initialCode = [
     'function x() {',
     '\tconsole.log("Hello world!");',
-    '}'
+    '}',
   ].join('\n');
 
   private _initializeMonaco() {
     console.info('Initialize Monaco...');
-    require.config({ paths: { 'vs': this.baseUrl + 'vendor/monaco-editor/min/vs' } });
+    require.config({paths: {'vs': this.baseUrl + 'vendor/monaco-editor/min/vs'}});
   }
 
   private _attachEditorToHostElement(hostElement: HTMLElement) {
     console.log('Attach!');
+
     require(['vs/editor/editor.main'], () => {
       // creatting the monaco editor and save the instance for it
       this._editorInstance = monaco.editor.create(hostElement, {
         value: this._initialCode,
-        language: 'typescript'
+        language: 'typescript',
+        theme: 'vs-dark',
       });
 
       // we want to get notified for changes
@@ -56,8 +58,6 @@ export class TypescriptEditorComponent {
         const value = model.getValue();
         this.onEditorChange(value);
       });
-
-
     });
   }
 
@@ -68,10 +68,10 @@ export class TypescriptEditorComponent {
       // attach the logs to the logHost
       // by naively assuming all our arguments will be easily coerced into strings...
       const logOutput = args.map(arg => arg + '').join(' ');
-      this._logHost.innerHTML += logOutput + '<br/>';
+      this._logHost.innerHTML = logOutput + '<br/>' + this._logHost.innerHTML;
       // and call the original one...
       orgConsoleLog.apply(window, args);
-    }
+    };
 
   }
 
@@ -83,8 +83,8 @@ export class TypescriptEditorComponent {
 
     let result = ts.transpileModule(inputCode, {
       compilerOptions: {
-        module: ts.ModuleKind.CommonJS
-      }
+        module: ts.ModuleKind.CommonJS,
+      },
     });
 
     return result.outputText;
@@ -134,11 +134,12 @@ export class TypescriptEditorComponent {
   }
 
   render() {
-    return <div>
-      <div ref={ el => this._editorHost = el }
+    return <div class="editor-wrapper">
+      <div ref={el => this._editorHost = el}
            class="editor"
       ></div>
-      <div ref={ el => this._logHost = el } class="log">&nbsp;</div>
+      <div ref={el => this._logHost = el} class="log"></div>
+      <button class="clear-button" onClick={() => this._logHost.innerHTML = ''}>Clear log</button>
     </div>;
   }
 }
