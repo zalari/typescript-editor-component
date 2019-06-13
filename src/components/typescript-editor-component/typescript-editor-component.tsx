@@ -2,11 +2,11 @@ import { Component, Prop, h } from '@stencil/core';
 import { format } from '../../utils/utils';
 
 @Component({
-  tag: 'my-component',
-  styleUrl: 'my-component.css',
+  tag: 'typescript-editor-component',
+  styleUrl: 'typescript-editor-component.css',
   shadow: true
 })
-export class MyComponent {
+export class TypescriptEditorComponent {
   /**
    * The first name
    */

@@ -9,7 +9,7 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 
 export namespace Components {
-  interface MyComponent {
+  interface TypescriptEditorComponent {
     /**
     * The first name
     */
@@ -28,18 +28,18 @@ export namespace Components {
 declare global {
 
 
-  interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {}
-  var HTMLMyComponentElement: {
-    prototype: HTMLMyComponentElement;
-    new (): HTMLMyComponentElement;
+  interface HTMLTypescriptEditorComponentElement extends Components.TypescriptEditorComponent, HTMLStencilElement {}
+  var HTMLTypescriptEditorComponentElement: {
+    prototype: HTMLTypescriptEditorComponentElement;
+    new (): HTMLTypescriptEditorComponentElement;
   };
   interface HTMLElementTagNameMap {
-    'my-component': HTMLMyComponentElement;
+    'typescript-editor-component': HTMLTypescriptEditorComponentElement;
   }
 }
 
 declare namespace LocalJSX {
-  interface MyComponent extends JSXBase.HTMLAttributes<HTMLMyComponentElement> {
+  interface TypescriptEditorComponent extends JSXBase.HTMLAttributes<HTMLTypescriptEditorComponentElement> {
     /**
     * The first name
     */
@@ -55,7 +55,7 @@ declare namespace LocalJSX {
   }
 
   interface IntrinsicElements {
-    'my-component': MyComponent;
+    'typescript-editor-component': TypescriptEditorComponent;
   }
 }
 

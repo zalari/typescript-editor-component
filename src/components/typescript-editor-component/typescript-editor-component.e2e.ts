@@ -4,7 +4,7 @@ describe('my-component', () => {
   it('renders', async () => {
     const page = await newE2EPage();
 
-    await page.setContent('<my-component></my-component>');
+    await page.setContent('<typescript-editor-component></typescript-editor-component>');
     const element = await page.find('my-component');
     expect(element).toHaveClass('hydrated');
   });
@@ -12,9 +12,9 @@ describe('my-component', () => {
   it('renders changes to the name data', async () => {
     const page = await newE2EPage();
 
-    await page.setContent('<my-component></my-component>');
+    await page.setContent('<typescript-editor-component></typescript-editor-component>');
     const component = await page.find('my-component');
-    const element = await page.find('my-component >>> div');
+    const element = await page.find('typescript-editor-component >>> div');
     expect(element.textContent).toEqual(`Hello, World! I'm `);
 
     component.setProperty('first', 'James');
