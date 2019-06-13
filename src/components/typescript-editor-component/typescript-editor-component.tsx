@@ -15,6 +15,9 @@ export class TypescriptEditorComponent {
     console.log('Loading vs-loader');
     const body = document.getElementsByTagName('body')[0];
     scriptLoader(body, this.baseUrl + 'vendor/monaco-editor/min/vs/loader.js');
+    // and typescript as wellz
+    scriptLoader(body, this.baseUrl + 'vendor/typescript/typescript.js');
+
   }
 
   private _editorHost: HTMLDivElement;

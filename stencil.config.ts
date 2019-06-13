@@ -18,6 +18,9 @@ export const config: Config = {
   copy: [
     {
       src: '../node_modules/monaco-editor/', dest: 'vendor/monaco-editor/'
+    },
+    {
+      src: '../node_modules/typescript/lib/typescript.js', dest: 'vendor/typescript/typescript.js'
     }
   ]
 };
