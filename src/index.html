@@ -10,7 +10,14 @@
 </head>
 <body>
 
-  <typescript-editor-component></typescript-editor-component>
+  <typescript-editor-component>
+    <slot>
+      interface Test {
+      test: boolean;
+      }
+      let t: Test = { test: 'true' }
+    </slot>
+  </typescript-editor-component>
 
 </body>
 </html>

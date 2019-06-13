@@ -9,3 +9,6 @@ div.log {
   height: 600px;
   background: #0097fb;
 }
+slot {
+  display: none;
+}

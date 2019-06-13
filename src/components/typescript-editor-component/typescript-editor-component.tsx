@@ -1,4 +1,4 @@
-import { Component, h, Prop } from '@stencil/core';
+import { Component, Element, h, Listen, Prop } from '@stencil/core';
 import { scriptLoader } from '../../utils/utils';
 import { languages } from 'monaco-editor';
 import CompilerOptions = languages.typescript.CompilerOptions;
@@ -25,7 +25,16 @@ export class TypescriptEditorComponent {
   private _editorHost: HTMLDivElement;
   private _logHost: HTMLDivElement;
 
+  @Element() private _elementRef: HTMLElement;
+
   private _editorInstance: any;
+
+  private _currentEditorContent = '';
+  private _initialCode = [
+    'function x() {',
+    '\tconsole.log("Hello world!");',
+    '}'
+  ].join('\n');
 
   private _initializeMonaco() {
     console.info('Initialize Monaco...');
@@ -37,11 +46,7 @@ export class TypescriptEditorComponent {
     require(['vs/editor/editor.main'], () => {
       // creatting the monaco editor and save the instance for it
       this._editorInstance = monaco.editor.create(hostElement, {
-        value: [
-          'function x() {',
-          '\tconsole.log("Hello world!");',
-          '}'
-        ].join('\n'),
+        value: this._initialCode,
         language: 'typescript'
       });
 
@@ -86,19 +91,31 @@ export class TypescriptEditorComponent {
 
   }
 
-  onEditorChange(content) {
-    // console.log('Editor changed content to', content);
+  private _ev0lTypeScript(inputCode: string, compilerOptions?: CompilerOptions) {
     // now transpile it and ev0l() it!
-    const transpiledJs = this._transformTypeScript(content);
+    const transpiledJs = this._transformTypeScript(inputCode);
     // console.log('transpiled', transpiledJs);
     eval(transpiledJs);
+  }
 
+  private _fetchInitialCodeFromElement() {
+    // try to fetch initialCode, if there is a slot there...
+    if (this._elementRef.querySelector('slot')) {
+      this._initialCode = this._elementRef.querySelector('slot').innerText;
+    }
+
+  }
+
+  onEditorChange(content) {
+    // console.log('Editor changed content to', content);
+    this._currentEditorContent = content;
   }
 
   componentWillLoad() {
   }
 
   componentDidLoad() {
+    this._fetchInitialCodeFromElement();
     // we need some time...
     setTimeout(() => {
       // initialize monaco
@@ -106,6 +123,14 @@ export class TypescriptEditorComponent {
       this._attachEditor();
       this._attachLog();
     }, 1000);
+  }
+
+  @Listen('keydown')
+  handleKeyInput(ev: KeyboardEvent) {
+    // ALT_RIGHTTTZZZZZ or the right option key on MäckOHS
+    if (ev.code === 'AltRight') {
+      this._ev0lTypeScript(this._currentEditorContent);
+    }
   }
 
   render() {

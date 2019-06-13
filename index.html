@@ -9,7 +9,14 @@
   </head>
   <body>
 
-    <typescript-editor-component base-url="dist/collection/"></typescript-editor-component>
+    <typescript-editor-component base-url="dist/collection/">
+      <slot>
+        interface Test {
+          test: boolean;
+        }
+        let t: Test = { test: 'true' }
+      </slot>
+    </typescript-editor-component>
 
   </body>
 </html>
