@@ -14,12 +14,24 @@ export class TypescriptEditorComponent {
 
   constructor() {
     // only load the vs-loader stuff only once
-    console.log('Loading vs-loader');
-    const body = document.getElementsByTagName('body')[0];
-    scriptLoader(body, this.baseUrl + 'vendor/monaco-editor/min/vs/loader.js');
-    // and typescript as wellz
-    scriptLoader(body, this.baseUrl + 'vendor/typescript/typescript.js');
-
+    // because Stencil is calling the constructor for every attachedCallback internally
+    // we have to rely on a global promise
+    // if it is unset, do the initial stuff and set the promise
+    if (!window['_TSisInitialized']) {
+      window['_TSisInitialized'] = new Promise((resolve => {
+        console.log('Loading vs-loader');
+        const body = document.getElementsByTagName('body')[0];
+        scriptLoader(body, this.baseUrl + 'vendor/monaco-editor/min/vs/loader.js');
+        // and typescript as wellz
+        scriptLoader(body, this.baseUrl + 'vendor/typescript/typescript.js');
+        // wait some time for load and configure monaco and expose it globally
+        setTimeout(() => {
+            this._initializeMonaco();
+            // now we are initialized...
+            resolve();
+        }, 500)
+      }));
+    }
   }
 
   private _editorHost: HTMLDivElement;
@@ -38,26 +50,27 @@ export class TypescriptEditorComponent {
 
   private _initializeMonaco() {
     console.info('Initialize Monaco...');
+    // set config and expose monaco globally
     require.config({ paths: { 'vs': this.baseUrl + 'vendor/monaco-editor/min/vs' } });
+    require(['vs/editor/editor.main'], () => {
+      // creating the monaco editor and expose monaco
+      window['monaco'] = monaco;
+    });
   }
 
   private _attachEditorToHostElement(hostElement: HTMLElement) {
     console.log('Attach!');
-    require(['vs/editor/editor.main'], () => {
-      // creatting the monaco editor and save the instance for it
-      this._editorInstance = monaco.editor.create(hostElement, {
-        value: this._initialCode,
-        language: 'typescript'
-      });
+    // creating the monaco editor and save the instance for it
+    this._editorInstance = monaco.editor.create(hostElement, {
+      value: this._initialCode,
+      language: 'typescript'
+    });
 
-      // we want to get notified for changes
-      const model = this._editorInstance.getModel();
-      model.onDidChangeContent(() => {
-        const value = model.getValue();
-        this.onEditorChange(value);
-      });
-
-
+    // we want to get notified for changes
+    const model = this._editorInstance.getModel();
+    model.onDidChangeContent(() => {
+      const value = model.getValue();
+      this.onEditorChange(value);
     });
   }
 
@@ -91,10 +104,16 @@ export class TypescriptEditorComponent {
 
   }
 
+  private _clearLog() {
+    this._logHost.innerHTML = '';
+  }
+
   private _ev0lTypeScript(inputCode: string, compilerOptions?: CompilerOptions) {
     // now transpile it and ev0l() it!
     const transpiledJs = this._transformTypeScript(inputCode);
     // console.log('transpiled', transpiledJs);
+    // clear log before transpiling
+    this._clearLog();
     eval(transpiledJs);
   }
 
@@ -116,14 +135,15 @@ export class TypescriptEditorComponent {
   }
 
   componentDidLoad() {
-    this._fetchInitialCodeFromElement();
-    // we need some time...
-    setTimeout(() => {
-      // initialize monaco
-      this._initializeMonaco();
-      this._attachEditor();
-      this._attachLog();
-    }, 1000);
+    // await global initialization
+    window['_TSisInitialized'].then(()=> {
+      this._fetchInitialCodeFromElement();
+      // we need some time...
+      setTimeout(() => {
+        this._attachEditor();
+        this._attachLog();
+      }, 1000);
+    });
   }
 
   @Listen('keydown')
