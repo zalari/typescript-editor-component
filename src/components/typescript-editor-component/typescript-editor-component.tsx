@@ -99,9 +99,10 @@ export class TypescriptEditorComponent {
   }
 
   private _fetchInitialCodeFromElement() {
-    // try to fetch initialCode, if there is a slot there...
-    if (this._elementRef.querySelector('slot')) {
-      this._initialCode = this._elementRef.querySelector('slot').innerText;
+    // try to fetch initialCode, if there is a code tag there...
+    if (this._elementRef.querySelector('code')) {
+      this._initialCode = this._elementRef.querySelector('code').innerText;
+      console.info('Got me initialCode', this._initialCode);
     }
 
   }
@@ -139,6 +140,9 @@ export class TypescriptEditorComponent {
            class="editor"
       ></div>
       <div ref={ el => this._logHost = el } class="log">&nbsp;</div>
+      <div class="code">
+        <slot/>
+      </div>
     </div>;
   }
 }
