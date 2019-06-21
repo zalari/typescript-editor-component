@@ -19,13 +19,14 @@
     "start": "stencil build --dev --watch --serve",
     "start:build": "http-server . --cors -c-1",
     "test": "stencil test --spec --e2e",
-    "test.watch": "stencil test --spec --e2e --watchAll"
+    "test:watch": "stencil test --spec --e2e --watchAll"
   },
   "devDependencies": {
-    "@stencil/core": "1.0.0-beta.8",
-    "http-server": "^0.11.1",
-    "monaco-editor": "^0.17.0",
-    "typescript": "^3.5.1"
+    "@stencil/core": "1.0.7",
+    "@stencil/sass": "1.0.0",
+    "http-server": "0.11.1",
+    "monaco-editor": "0.17.0",
+    "typescript": "3.5.2"
   },
   "license": "MIT"
 }

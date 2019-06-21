@@ -9,6 +9,10 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 
 export namespace Components {
+  interface LogComponent {
+    'clear': () => Promise<void>;
+    'showTimestamp': boolean;
+  }
   interface TypescriptEditorComponent {
     'baseUrl': string;
   }
@@ -17,22 +21,33 @@ export namespace Components {
 declare global {
 
 
+  interface HTMLLogComponentElement extends Components.LogComponent, HTMLStencilElement {}
+  var HTMLLogComponentElement: {
+    prototype: HTMLLogComponentElement;
+    new (): HTMLLogComponentElement;
+  };
+
   interface HTMLTypescriptEditorComponentElement extends Components.TypescriptEditorComponent, HTMLStencilElement {}
   var HTMLTypescriptEditorComponentElement: {
     prototype: HTMLTypescriptEditorComponentElement;
     new (): HTMLTypescriptEditorComponentElement;
   };
   interface HTMLElementTagNameMap {
+    'log-component': HTMLLogComponentElement;
     'typescript-editor-component': HTMLTypescriptEditorComponentElement;
   }
 }
 
 declare namespace LocalJSX {
+  interface LogComponent extends JSXBase.HTMLAttributes<HTMLLogComponentElement> {
+    'showTimestamp'?: boolean;
+  }
   interface TypescriptEditorComponent extends JSXBase.HTMLAttributes<HTMLTypescriptEditorComponentElement> {
     'baseUrl'?: string;
   }
 
   interface IntrinsicElements {
+    'log-component': LogComponent;
     'typescript-editor-component': TypescriptEditorComponent;
   }
 }

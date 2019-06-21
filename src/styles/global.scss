@@ -1,0 +1,39 @@
+@mixin decorated() {
+  --bar-height: 30px;
+  --bar-color: #ccc;
+  --bar-radius: calc(var(--bar-height) / 6);
+  --knob-color: #9b9b9b;
+  --knob-size: calc(var(--bar-height) / 2.5);
+  --knob-offset: calc((var(--bar-height) - var(--knob-size)) / 2);
+  --bg-color: #1e1e1e;
+
+  background: var(--bg-color);
+  border: 0 !important;
+  border-top: var(--bar-height) solid var(--bar-color) !important;
+  border-top-left-radius: var(--bar-radius);
+  border-top-right-radius: var(--bar-radius);
+  position: relative;
+
+  &:before,
+  &:after {
+    //background-color: #fd615e;
+    //background-color: #fec042;
+    //background-color: #30ca4a;
+    background-color: var(--knob-color);
+    content: '';
+    border-radius: 50%;
+    position: absolute;
+    top: calc(var(--bar-height) * -1 + var(--knob-offset));
+    height: var(--knob-size);
+    width: var(--knob-size);
+    z-index: 2;
+  }
+
+  &:before {
+    left: var(--knob-offset);
+  }
+
+  &:after {
+    left: calc(var(--knob-offset) * 2 + var(--knob-size));
+  }
+}

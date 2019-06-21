@@ -1,0 +1,16 @@
+@import '../../styles/global';
+
+.editor {
+  @include decorated();
+  border: 1px solid grey;
+  position: relative;
+  text-align: left;
+  display: inline-block;
+  height: 400px;
+  width: 600px;
+  margin-bottom: 30px;
+}
+
+.code {
+  display: none;
+}

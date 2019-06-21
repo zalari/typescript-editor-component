@@ -1,0 +1,32 @@
+@import '../../styles/global';
+
+:host {
+  @include decorated();
+  display: inline-block;
+  color: #f0f0f0;
+  font: 13px/1.4 Monaco, Monospaced, monospace;
+}
+
+.log {
+  box-sizing: border-box;
+  width: 600px;
+  min-height: 100px;
+  max-height: 250px;
+  overflow: auto;
+}
+
+.entry {
+  border-bottom: 1px solid #5b5b5b;
+  display: flex;
+  flex-direction: row;
+  padding: 4px 10px;
+}
+
+.timestamp {
+  color: #9a9a9a;
+  padding-right: 5px;
+
+  :host(:not(.show-timestamp)) & {
+    display: none;
+  }
+}

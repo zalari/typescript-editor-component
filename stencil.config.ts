@@ -1,4 +1,5 @@
 import { Config } from '@stencil/core';
+import { sass } from '@stencil/sass';
 
 export const config: Config = {
   namespace: 'typescript-editor-component',
@@ -22,5 +23,10 @@ export const config: Config = {
     {
       src: '../node_modules/typescript/lib/typescript.js', dest: 'vendor/typescript/typescript.js'
     }
+  ],
+  plugins: [
+    sass({
+
+    })
   ]
 };

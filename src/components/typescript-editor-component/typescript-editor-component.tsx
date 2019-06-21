@@ -1,14 +1,30 @@
-import { Component, Element, h, Listen, Prop } from '@stencil/core';
-import { scriptLoader } from '../../utils/utils';
+import { Component, ComponentDidLoad, Element, h, Listen, Prop } from '@stencil/core';
 import { languages } from 'monaco-editor';
+import { scriptLoader } from '../../utils/utils';
 import CompilerOptions = languages.typescript.CompilerOptions;
 
 @Component({
   tag: 'typescript-editor-component',
-  styleUrl: 'typescript-editor-component.css',
+  styleUrl: 'typescript-editor-component.scss',
   shadow: false
 })
-export class TypescriptEditorComponent {
+export class TypescriptEditorComponent implements ComponentDidLoad {
+
+  @Element() private _elementRef: HTMLTypescriptEditorComponentElement;
+
+  private _editorHost: HTMLDivElement;
+
+  private _logHost: HTMLLogComponentElement;
+
+  private _editorInstance: any;
+
+  private _currentEditorContent = '';
+
+  private _initialCode = [
+    'function x() {',
+    '\tconsole.log("Hello world!");',
+    '}'
+  ].join('\n');
 
   @Prop() baseUrl: string = '';
 
@@ -18,35 +34,53 @@ export class TypescriptEditorComponent {
     // we have to rely on a global promise
     // if it is unset, do the initial stuff and set the promise
     if (!window['_TSisInitialized']) {
-      window['_TSisInitialized'] = new Promise((resolve => {
-        console.log('Loading vs-loader');
-        const body = document.getElementsByTagName('body')[0];
-        scriptLoader(body, this.baseUrl + 'vendor/monaco-editor/min/vs/loader.js');
-        // and typescript as wellz
-        scriptLoader(body, this.baseUrl + 'vendor/typescript/typescript.js');
-        // wait some time for load and configure monaco and expose it globally
-        setTimeout(() => {
-            this._initializeMonaco();
-            // now we are initialized...
-            resolve();
-        }, 500)
-      }));
+      console.log('Loading vs-loader');
+      const body = document.getElementsByTagName('body')[0];
+
+      window['_TSisInitialized'] = Promise
+        .all([
+          scriptLoader(body, this.baseUrl + 'vendor/monaco-editor/min/vs/loader.js'),
+          scriptLoader(body, this.baseUrl + 'vendor/typescript/typescript.js')
+        ])
+        .then(() => setTimeout(() => this._initializeMonaco(), 500));
     }
   }
 
-  private _editorHost: HTMLDivElement;
-  private _logHost: HTMLDivElement;
+  onEditorChange(content) {
+    // console.log('Editor changed content to', content);
+    this._currentEditorContent = content;
+  }
 
-  @Element() private _elementRef: HTMLElement;
+  componentDidLoad() {
+    // await global initialization
+    window['_TSisInitialized'].then(() => {
+      this._fetchInitialCodeFromElement();
+      // we need some time...
+      setTimeout(() => this._attachEditor(), 1000);
+    });
+  }
 
-  private _editorInstance: any;
+  @Listen('keydown')
+  handleKeyInput(ev: KeyboardEvent) {
+    // ALT_RIGHTTTZZZZZ or the right option key on MäckOHS
+    if (ev.code === 'AltRight') {
+      this._ev0lTypeScript(this._currentEditorContent);
+    }
+  }
 
-  private _currentEditorContent = '';
-  private _initialCode = [
-    'function x() {',
-    '\tconsole.log("Hello world!");',
-    '}'
-  ].join('\n');
+  render() {
+    return [
+      <div ref={ el => this._editorHost = el }
+           class="editor"
+      />,
+      <log-component ref={ el => this._logHost = el }
+                     class="log"
+      />,
+      <div class="code">
+        <slot/>
+      </div>
+    ];
+  }
 
   private _initializeMonaco() {
     console.info('Initialize Monaco...');
@@ -63,7 +97,11 @@ export class TypescriptEditorComponent {
     // creating the monaco editor and save the instance for it
     this._editorInstance = monaco.editor.create(hostElement, {
       value: this._initialCode,
-      language: 'typescript'
+      language: 'typescript',
+      theme: 'vs-dark',
+      minimap: {
+        enabled: false
+      }
     });
 
     // we want to get notified for changes
@@ -72,20 +110,6 @@ export class TypescriptEditorComponent {
       const value = model.getValue();
       this.onEditorChange(value);
     });
-  }
-
-  private _attachLog() {
-    // monkey patch console.log because that is how we program
-    const orgConsoleLog = console.log;
-    console.log = (...args) => {
-      // attach the logs to the logHost
-      // by naively assuming all our arguments will be easily coerced into strings...
-      const logOutput = args.map(arg => arg + '').join(' ');
-      this._logHost.innerHTML += logOutput + '<br/>';
-      // and call the original one...
-      orgConsoleLog.apply(window, args);
-    }
-
   }
 
   private _attachEditor() {
@@ -104,16 +128,12 @@ export class TypescriptEditorComponent {
 
   }
 
-  private _clearLog() {
-    this._logHost.innerHTML = '';
-  }
-
   private _ev0lTypeScript(inputCode: string, compilerOptions?: CompilerOptions) {
     // now transpile it and ev0l() it!
     const transpiledJs = this._transformTypeScript(inputCode);
     // console.log('transpiled', transpiledJs);
     // clear log before transpiling
-    this._clearLog();
+    // this._logHost.clear();
     eval(transpiledJs);
   }
 
@@ -126,43 +146,4 @@ export class TypescriptEditorComponent {
 
   }
 
-  onEditorChange(content) {
-    // console.log('Editor changed content to', content);
-    this._currentEditorContent = content;
-  }
-
-  componentWillLoad() {
-  }
-
-  componentDidLoad() {
-    // await global initialization
-    window['_TSisInitialized'].then(()=> {
-      this._fetchInitialCodeFromElement();
-      // we need some time...
-      setTimeout(() => {
-        this._attachEditor();
-        this._attachLog();
-      }, 1000);
-    });
-  }
-
-  @Listen('keydown')
-  handleKeyInput(ev: KeyboardEvent) {
-    // ALT_RIGHTTTZZZZZ or the right option key on MäckOHS
-    if (ev.code === 'AltRight') {
-      this._ev0lTypeScript(this._currentEditorContent);
-    }
-  }
-
-  render() {
-    return <div>
-      <div ref={ el => this._editorHost = el }
-           class="editor"
-      ></div>
-      <div ref={ el => this._logHost = el } class="log">&nbsp;</div>
-      <div class="code">
-        <slot/>
-      </div>
-    </div>;
-  }
 }
