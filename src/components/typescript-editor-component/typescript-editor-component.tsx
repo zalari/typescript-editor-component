@@ -35,8 +35,8 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
 
       window._TSisInitialized = Promise
         .all([
-          scriptLoader(body, this.baseUrl + 'vendor/monaco-editor/min/vs/loader.js'),
-          scriptLoader(body, this.baseUrl + 'vendor/typescript/typescript.js')
+          scriptLoader(body, `${ this.baseUrl }vendor/monaco-editor/min/vs/loader.js`),
+          scriptLoader(body, `${ this.baseUrl }vendor/typescript/typescript.js`)
         ])
         .then(() => setTimeout(() => this._initializeMonaco(), 500))
         .then();
@@ -82,7 +82,7 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
   private _initializeMonaco() {
     console.info('Initialize Monaco...');
     // set config and expose monaco globally
-    require.config({ paths: { 'vs': this.baseUrl + 'vendor/monaco-editor/min/vs' } });
+    require.config({ paths: { vs: `${ this.baseUrl }vendor/monaco-editor/min/vs` } });
     require(['vs/editor/editor.main'], () => {
       // creating the monaco editor and expose monaco
       window.monaco = monaco;
