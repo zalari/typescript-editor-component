@@ -1,8 +1,10 @@
 @mixin decorated() {
   --bar-height: 30px;
-  --bar-color: #ccc;
+  --bar-color: #dedede;
   --bar-radius: calc(var(--bar-height) / 6);
-  --knob-color: #9b9b9b;
+  --knob-color-left: #fd615e;
+  --knob-color-middle: #fec042;
+  --knob-color-right: #30ca4a;
   --knob-size: calc(var(--bar-height) / 2.5);
   --knob-offset: calc((var(--bar-height) - var(--knob-size)) / 2);
   --bg-color: #1e1e1e;
@@ -14,26 +16,22 @@
   border-top-right-radius: var(--bar-radius);
   position: relative;
 
-  &:before,
-  &:after {
-    //background-color: #fd615e;
-    //background-color: #fec042;
-    //background-color: #30ca4a;
-    background-color: var(--knob-color);
-    content: '';
-    border-radius: 50%;
-    position: absolute;
-    top: calc(var(--bar-height) * -1 + var(--knob-offset));
-    height: var(--knob-size);
-    width: var(--knob-size);
-    z-index: 2;
-  }
-
   &:before {
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-image: linear-gradient(to right,
+      var(--knob-color-left) 33%,
+      var(--knob-color-middle) 33%,
+      var(--knob-color-middle) 67%,
+      var(--knob-color-right) 67%
+    );
+    color: transparent;
+    content: '⚫⚫⚫';
+    position: absolute;
+    font-size: var(--knob-size);
+    line-height: var(--bar-height);
+    letter-spacing: .3em;
+    top: calc(var(--bar-height) * -.98);
     left: var(--knob-offset);
-  }
-
-  &:after {
-    left: calc(var(--knob-offset) * 2 + var(--knob-size));
   }
 }
