@@ -38,8 +38,7 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
           scriptLoader(body, `${ this.baseUrl }vendor/monaco-editor/min/vs/loader.js`),
           scriptLoader(body, `${ this.baseUrl }vendor/typescript/typescript.js`)
         ])
-        .then(() => setTimeout(() => this._initializeMonaco(), 500))
-        .then();
+        .then(() => setTimeout(() => this._initializeMonaco(), 500));
     }
   }
 
