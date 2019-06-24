@@ -1,5 +1,5 @@
 import { Component, ComponentDidLoad, Element, h, Listen, Prop } from '@stencil/core';
-import { languages } from 'monaco-editor';
+import { editor, languages } from 'monaco-editor';
 import { scriptLoader } from '../../utils/utils';
 import CompilerOptions = languages.typescript.CompilerOptions;
 
@@ -16,33 +16,30 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
 
   private _logHost: HTMLLogComponentElement;
 
-  private _editorInstance: any;
+  private _editorInstance: editor.IStandaloneCodeEditor;
 
   private _currentEditorContent = '';
 
-  private _initialCode = [
-    'function x() {',
-    '\tconsole.log("Hello world!");',
-    '}'
-  ].join('\n');
+  private _initialCode = '';
 
-  @Prop() baseUrl: string = '';
+  @Prop() baseUrl = '';
 
   constructor() {
     // only load the vs-loader stuff only once
     // because Stencil is calling the constructor for every attachedCallback internally
     // we have to rely on a global promise
     // if it is unset, do the initial stuff and set the promise
-    if (!window['_TSisInitialized']) {
+    if (!window._TSisInitialized) {
       console.log('Loading vs-loader');
       const body = document.getElementsByTagName('body')[0];
 
-      window['_TSisInitialized'] = Promise
+      window._TSisInitialized = Promise
         .all([
           scriptLoader(body, this.baseUrl + 'vendor/monaco-editor/min/vs/loader.js'),
           scriptLoader(body, this.baseUrl + 'vendor/typescript/typescript.js')
         ])
-        .then(() => setTimeout(() => this._initializeMonaco(), 500));
+        .then(() => setTimeout(() => this._initializeMonaco(), 500))
+        .then();
     }
   }
 
@@ -53,7 +50,7 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
 
   componentDidLoad() {
     // await global initialization
-    window['_TSisInitialized'].then(() => {
+    window._TSisInitialized.then(() => {
       this._fetchInitialCodeFromElement();
       // we need some time...
       setTimeout(() => this._attachEditor(), 1000);
@@ -88,7 +85,7 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
     require.config({ paths: { 'vs': this.baseUrl + 'vendor/monaco-editor/min/vs' } });
     require(['vs/editor/editor.main'], () => {
       // creating the monaco editor and expose monaco
-      window['monaco'] = monaco;
+      window.monaco = monaco;
     });
   }
 
@@ -117,7 +114,6 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
   }
 
   private _transformTypeScript(inputCode: string, compilerOptions?: CompilerOptions): string {
-
     let result = ts.transpileModule(inputCode, {
       compilerOptions: {
         module: ts.ModuleKind.CommonJS
@@ -125,7 +121,6 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
     });
 
     return result.outputText;
-
   }
 
   private _ev0lTypeScript(inputCode: string, compilerOptions?: CompilerOptions) {
