@@ -24,6 +24,8 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
 
   @Prop() baseUrl = '';
 
+  @Prop() lineCount = 10;
+
   constructor() {
     // only load the vs-loader stuff only once
     // because Stencil is calling the constructor for every attachedCallback internally
@@ -48,6 +50,8 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
   }
 
   componentDidLoad() {
+    // use lineCount to set editor height
+    this._changeEditorLines();
     // await global initialization
     window._TSisInitialized.then(() => {
       this._fetchInitialCodeFromElement();
@@ -76,6 +80,10 @@ export class TypescriptEditorComponent implements ComponentDidLoad {
         <slot/>
       </div>
     ];
+  }
+
+  private _changeEditorLines() {
+      this._editorHost.style.setProperty('--editor-lines', this.lineCount + '');
   }
 
   private _initializeMonaco() {

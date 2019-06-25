@@ -15,6 +15,7 @@ export namespace Components {
   }
   interface TypescriptEditorComponent {
     'baseUrl': string;
+    'lineCount': number;
   }
 }
 
@@ -44,6 +45,7 @@ declare namespace LocalJSX {
   }
   interface TypescriptEditorComponent extends JSXBase.HTMLAttributes<HTMLTypescriptEditorComponentElement> {
     'baseUrl'?: string;
+    'lineCount'?: number;
   }
 
   interface IntrinsicElements {
