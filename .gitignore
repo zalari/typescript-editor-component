@@ -1,26 +1,30 @@
+# caches
+.rpt2_cache/
+.stencil/
+.sass-cache/
+.versions/
+node_modules/
+
+# build
 dist/
 www/
 loader/
 
-*~
-*.sw[mnpcod]
-*.log
-*.lock
-*.tmp
-*.tmp.*
-log.txt
-*.sublime-project
-*.sublime-workspace
-
-.stencil/
-.idea/
+# we do not want to enforce ignored; because this might be user-specific especially for a MonoRepo
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+# User-specific stuff
 .vscode/
-.sass-cache/
-.versions/
-node_modules/
-$RECYCLE.BIN/
+.idea/*
+!.idea/runConfigurations/
+!.idea/codeStyleSettings.xml
+!.idea/codeStyles
 
-.DS_Store
-Thumbs.db
-UserInterfaceState.xcuserstate
-.env
+# logs
+lerna-debug.log
+
+# os
+**/.DS_Store
+**/Thumbs.db
+**/UserInterfaceState.xcuserstate
+**/.env
+**/$RECYCLE.BIN/
