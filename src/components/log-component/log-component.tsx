@@ -69,7 +69,8 @@ export class LogComponent implements ComponentDidLoad {
         .map(arg => arg + '')
         .join(' ');
       const timestamp = this.showTimestamp ? this._renderTime() : '';
-      this._logHost.innerHTML += `<span class="entry"><span class="timestamp">${ timestamp }</span>${ logOutput }</span>`;
+      // new stuff is on top...
+      this._logHost.innerHTML = `<span class="entry"><span class="timestamp">${ timestamp }</span>${ logOutput }</span>` + this._logHost.innerHTML;
       // and call the original one...
       orgConsoleLog.apply(window, args);
       // scroll down
