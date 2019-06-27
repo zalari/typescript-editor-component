@@ -1,16 +1,26 @@
 @import '../../styles/global';
 
-.editor {
+:host,
+typescript-editor-component {
+  display: block;
+  margin: 0 auto;
+  width: 600px;
+}
 
+.editor,
+.log {
+  display: block;
+  width: 600px;
+}
+
+.editor {
   --editor-lines: 10;
 
   @include decorated();
   border: 1px solid grey;
   position: relative;
   text-align: left;
-  display: inline-block;
   height: calc(var(--editor-lines) * 20px);
-  width: 600px;
   margin-bottom: 30px;
 }
 
