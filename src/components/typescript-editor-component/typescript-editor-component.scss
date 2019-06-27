@@ -3,7 +3,7 @@
 :host,
 typescript-editor-component {
   display: block;
-  margin: 0 auto;
+  margin: 30px auto;
   width: 600px;
 }
 
@@ -21,7 +21,10 @@ typescript-editor-component {
   position: relative;
   text-align: left;
   height: calc(var(--editor-lines) * 20px);
-  margin-bottom: 30px;
+}
+
+.log {
+  margin-top: 30px;
 }
 
 .code {
