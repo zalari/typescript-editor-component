@@ -7,9 +7,10 @@
 
 ## Properties
 
-| Property  | Attribute  | Description | Type     | Default |
-| --------- | ---------- | ----------- | -------- | ------- |
-| `baseUrl` | `base-url` |             | `string` | `''`    |
+| Property    | Attribute    | Description | Type     | Default |
+| ----------- | ------------ | ----------- | -------- | ------- |
+| `baseUrl`   | `base-url`   |             | `string` | `''`    |
+| `lineCount` | `line-count` |             | `number` | `10`    |
 
 
 ## Dependencies
